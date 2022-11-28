@@ -12,14 +12,19 @@ class PhotoFrame:
         self.dir_path = imgpath
 
         self.root = tkinter.Tk()
-        self.w, self.h = self.root.winfo_screenwidth(), self.root.info_screenheight()
+        self.w, self.h = self.root.winfo_screenwidth(), self.root.winfo_screenheight()
         self.root.overrideredirect(1)
         self.root.geometry("%dx%d+0+0" % (self.w, self.h))
         self.root.focus_set()    
-        self.root.bind("<Escape>", lambda e: (e.widget.withdraw(), e.widget.quit()))
-        self.canvas = tkinter.Canvas(root,width=self.w,height=self.h)
+        self.root.bind_all("<Escape>", lambda e: (e.widget.withdraw(), e.widget.quit()))
+        self.root.bind_all("<Control-c>", self.safe_quit)
+        self.canvas = tkinter.Canvas(self.root,width=self.w,height=self.h)
         self.canvas.pack()
         self.canvas.configure(background='black')
+
+    def safe_quit(self):
+        self.root.destroy()
+        print("destroyed tk root")
 
     def get_random_img(self):
         """
@@ -56,8 +61,8 @@ class PhotoFrame:
                 imgWidth = int(imgWidth*ratio)
                 imgHeight = int(imgHeight*ratio)
                 im = im.resize((imgWidth,imgHeight), Image.ANTIALIAS)
-            image = ImageTk.PhotoImage(im)
-            imagesprite = self.canvas.create_image(self.w/2,self.h/2,image=image)
+            self.image = ImageTk.PhotoImage(im)
+            imagesprite = self.canvas.create_image(self.w/2,self.h/2,image=self.image)
 
             return True
         except:
@@ -69,14 +74,14 @@ class PhotoFrame:
         """
         # get and display img
         self.get_random_img()
-        print("Attempting to show: " + self.imgname)
+        print("Attempting to show: " + self.img_fname)
         if (self.display_img()):
             # TODO: buttons for "don't show" and "like"
             # wait for a random amount of time (2 to 5 minutes per image)
             delay_time = random.randrange(2*60, 5*60)*1000
         else:
             # if we didn't successfully display an image, delay should be 0
-            print("not a good image: " + self.imgname)
+            print("not a good image: " + self.img_fname)
             delay_time = 1 # super short
         self.root.after(delay_time, self.slideshow)
 
@@ -113,7 +118,4 @@ if __name__ == "__main__":
     print("looking for images in: " + imgpath)
 
     pf = PhotoFrame(imgpath)
-
-    signal(SIGINT, handler)
-
     pf.run_show()
