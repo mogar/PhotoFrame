@@ -22,6 +22,14 @@ class PhotoFrame:
         self.canvas.pack()
         self.canvas.configure(background='black')
 
+        self.root.after(500, self.check_quit)
+
+    def check_quit(self):
+        """
+        Needed to improve UI responsivity when hitting ctl^c
+        """
+        self.root.after(500, self.check_quit)
+
     def safe_quit(self):
         self.root.destroy()
         print("destroyed tk root")
@@ -91,10 +99,6 @@ class PhotoFrame:
 
 def show_usage(scriptname):
     print(scriptname + " -p path/to/imgs")
-
-def handler(signal_received, frame):
-    # TODO: Handle any TKinter cleanup here
-    sys.exit(0)
 
 if __name__ == "__main__":
     try:
