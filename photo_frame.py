@@ -12,7 +12,7 @@ class PhotoFrame:
         self.dir_path = imgpath
 
         self.root = tkinter.Tk()
-        self.w, self.h = self.root.winfo_screenwidth(), root.winfo_screenheight()
+        self.w, self.h = self.root.winfo_screenwidth(), self.root.info_screenheight()
         self.root.overrideredirect(1)
         self.root.geometry("%dx%d+0+0" % (self.w, self.h))
         self.root.focus_set()    
