@@ -4,6 +4,7 @@ import sys, getopt
 import os, random
 import tkinter
 from PIL import Image, ImageTk
+from signal import signal, SIGINT
 
 def get_random_img(dir_path):
     """
@@ -35,8 +36,8 @@ def display_img(img_fname, canvas):
         # https://stackoverflow.com/questions/47316266/can-i-display-image-in-full-screen-mode-with-pil
         
 
-        w = canvas.cget("width")
-        h = canvas.cget("height")
+        w = int(canvas.cget("width"))
+        h = int(canvas.cget("height"))
         imgWidth, imgHeight = im.size
         if imgWidth > w or imgHeight > h:
             ratio = min(w/imgWidth, h/imgHeight)
@@ -68,6 +69,10 @@ def slideshow(path, canvas):
 
 def show_usage(scriptname):
     print(scriptname + " -p path/to/imgs")
+
+def handler(signal_received, frame):
+    # TODO: Handle any TKinter cleanup here
+    sys.exit(0)
 
 if __name__ == "__main__":
     try:
@@ -101,5 +106,7 @@ if __name__ == "__main__":
     canvas.configure(background='black')
 
     slideshow(imgpath, canvas)
+
+    signal(SIGINT, handler)
 
     root.mainloop()
